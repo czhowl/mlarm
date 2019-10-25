@@ -14,7 +14,7 @@ class ArmEnv(object):
     def __init__(self):
         self.arm_info = np.zeros(
             2, dtype=[('l', np.float32), ('r', np.float32)])
-        self.arm_info['l'] = 100        # 2 arms length
+        self.arm_info['l'] = 200        # 2 arms length
         self.arm_info['r'] = np.pi/6    # 2 angles information
         self.on_goal = 0
 
@@ -76,14 +76,18 @@ class ArmEnv(object):
 
 class Viewer(pyglet.window.Window):
     bar_thc = 5
+    width = 1000
+    height = 1000
 
     def __init__(self, arm_info, goal):
         # vsync=False to not use the monitor FPS, we can speed up training
-        super(Viewer, self).__init__(width=400, height=400, resizable=False, caption='Arm', vsync=False)
-        pyglet.gl.glClearColor(1, 1, 1, 1)
+        super(Viewer, self).__init__(width=self.width, height=self.height, resizable=False, caption='Arm', vsync=False)
+        pyglet.gl.glClearColor(1, 1, 1, 0)
+        pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
+        pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA, pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
         self.arm_info = arm_info
         self.goal_info = goal
-        self.center_coord = np.array([200, 200])
+        self.center_coord = np.array([self.width/2, self.height/2])
 
         self.batch = pyglet.graphics.Batch()    # display whole batch at once
         self.goal = self.batch.add(
@@ -92,19 +96,19 @@ class Viewer(pyglet.window.Window):
                      goal['x'] - goal['l'] / 2, goal['y'] + goal['l'] / 2,
                      goal['x'] + goal['l'] / 2, goal['y'] + goal['l'] / 2,
                      goal['x'] + goal['l'] / 2, goal['y'] - goal['l'] / 2]),
-            ('c3B', (249, 109, 86) * 4))    # color
+            ('c4B', (249, 89, 60, 255) * 4))    # color
         self.arm1 = self.batch.add(
             4, pyglet.gl.GL_QUADS, None,
             ('v2f', [250, 250,                # location
-                     250, 300,
-                     260, 300,
+                     250, 350,
+                     260, 350,
                      260, 250]),
             ('c3B', (100, 100, 100) * 4,))    # color
         self.arm2 = self.batch.add(
             4, pyglet.gl.GL_QUADS, None,
             ('v2f', [100, 150,              # location
-                     100, 160,
-                     200, 160,
+                     100, 260,
+                     200, 260,
                      200, 150]), ('c3B', (200, 200, 200) * 4,))
 
     def render(self):
@@ -157,4 +161,4 @@ if __name__ == '__main__':
     env = ArmEnv()
     while True:
         env.render()
-        env.step(env.sample_action())
+        # env.step(env.sample_action())

@@ -8,7 +8,7 @@ from rl import DDPG
 
 MAX_EPISODES = 1000
 MAX_EP_STEPS = 200
-ON_TRAIN = False
+ON_TRAIN = True
 
 # set env
 env = ArmEnv()
@@ -26,7 +26,7 @@ def train():
         s = env.reset()
         ep_r = 0.
         for j in range(MAX_EP_STEPS):
-            # env.render()
+            env.render()
 
             a = rl.choose_action(s)
 
